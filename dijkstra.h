@@ -1,6 +1,10 @@
 #include <vector>
 #include <math.h>
 #include <string>
+#include <sstream>
+#include <fstream>
+#include <iostream>
+#include <map>
 
 struct Node{
     double estimate = __DBL_MAX__;
@@ -9,16 +13,16 @@ struct Node{
     std::string id = "";
 };
 
-int left(int i, bool start_index_zero = true){
-    return (start_index_zero) ? ((i * 2) + 1) : (i * 2);
+int left(int i){
+    return ((i * 2) + 1);
 }
 
-int right(int i, bool start_index_zero = true){
-    return (start_index_zero) ? (2 * (i + 1)) : (2 * i + 1);
+int right(int i){
+    return (2 * (i + 1));
 }
 
 int parent(int i){
-    return floor(i / 2);
+    return std::floor(i / 2);
 }
 
 void min_heapify(std::vector<Node*>& nodes, int i){
@@ -53,20 +57,17 @@ Node* extract_min(std::vector<Node*>& nodes){
     return max;
 }
 
-/*
-void decrease_key(std::vector<Node*>& nodes, int i){
-    if(nodes[i].estimate < nodes[0].estimate)
-        std::__throw_invalid_argument("new key is smaller than current key");
-
-    while((i > 0) && (nodes[parent(i)].estimate > nodes[i].estimate)){
-        auto current = nodes[i];
-        nodes[i] = nodes[parent(i)];
-        nodes[parent(i)] = current;
-        i = parent(i);
+void heap_decrease_key(std::vector<Node*>& nodes, int index){
+    while(index >= 0 && nodes[parent(index)] > nodes[index]){
+        auto current = nodes[index];
+        nodes[index] = nodes[parent(index)];
+        nodes[parent(index)] = current;
+        current = nullptr;
+        index = parent(index);
     }
 }
-*/
-void build_min_heap(std::vector<Node*>& nodes){
-    for(int i = floor(nodes.size()); i >= 0; i--)
-        min_heapify(nodes, i);
+
+void min_heap_insert(std::vector<Node*>& nodes, Node* node){
+    nodes.push_back(node);
+    heap_decrease_key(nodes, nodes.size() - 1);
 }
